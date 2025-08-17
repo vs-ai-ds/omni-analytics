@@ -1,0 +1,87 @@
+# docker-compose.yml
+# Purpose: Orchestrate the stack: Postgres, pgAdmin, SFTP, and the Python app.
+
+name: omni-analytics
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: omni_pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DB}
+      TZ: ${TZ}
+    # Expose Postgres to host so Power BI can connect via localhost:5432
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persist DB data
+      - pgdata:/var/lib/postgresql/data
+      # Run bootstrap SQL on first container start
+      - ./sql/bootstrap:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    networks: [omni_net]
+
+  pgadmin:
+    image: dpage/pgadmin4:8.11
+    container_name: omni_pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "5050:80"
+    networks: [omni_net]
+
+  sftp:
+    image: atmoz/sftp:latest
+    container_name: omni_sftp
+    volumes:
+      - ./data/landing/ftp:/home/${SFTP_USER}/upload
+    ports:
+      - "2222:22"
+    # Creates a user SFTP_USER with password SFTP_PASS
+    command: "${SFTP_USER}:${SFTP_PASS}:1001"
+    networks: [omni_net]
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: omni_app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Inside the Docker network, reach Postgres by service name "postgres"
+      PG_HOST: postgres
+      PG_PORT: 5432
+      PG_DB: ${PG_DB}
+      PG_USER: ${PG_USER}
+      PG_PASSWORD: ${PG_PASSWORD}
+      APP_ENV: ${APP_ENV:-dev}
+      TZ: ${TZ}
+    volumes:
+      # Live-mount project folder for iterative development
+      - ./:/app
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./config:/app/config
+    working_dir: /app
+    networks: [omni_net]
+    # Keep the container running so you can exec commands anytime
+    command: ["sleep", "infinity"]
+
+networks:
+  omni_net:
+
+volumes:
+  pgdata:

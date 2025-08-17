@@ -1,0 +1,38 @@
+# Central, human-readable settings (env-agnostic).
+# Values in ${...} are interpolated from .env by our Python code.
+
+app:
+  env: ${APP_ENV}
+  timezone: ${TZ:UTC}
+  landing_dir: data/landing
+  staging_dir: data/staging_parquet
+  log_dir: logs
+
+database:
+  # Template used by src/common/config.py to build the SQLAlchemy URL
+  url: postgresql+psycopg://{user}:{password}@{host}:{port}/{db}
+  host: ${PG_HOST}
+  port: ${PG_PORT}
+  db:   ${PG_DB}
+  user: ${PG_USER}
+  password: ${PG_PASSWORD}
+  echo_sql: false  # set true for verbose SQL logs
+
+sources:
+  website_oltp: enabled
+  amazon_csv: enabled
+  google_ads_csv: enabled
+  ga4_bigquery_snapshot: enabled
+  pos_csv: enabled
+  vendor_stock_csv: enabled
+  ftp_xml_vendor: enabled
+
+etl:
+  incremental_days: 3
+  batch_size: 5000
+  fail_fast: true
+  checkpoints: true
+
+powerbi:
+  dataset_name: OmniAnalytics
+  incremental_range_days: 730

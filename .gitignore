@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+
+# Env & secrets
+.env
+
+# Logs & data
+logs/
+data/staging_parquet/
+docker/pgdata/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Power BI
+pbi/*.pbix

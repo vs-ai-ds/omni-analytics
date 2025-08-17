@@ -1,0 +1,27 @@
+# Config & utils
+pydantic==2.8.2
+pydantic-settings==2.4.0
+python-dotenv==1.0.1
+pyyaml==6.0.2
+
+# Data
+pandas==2.2.2
+pyarrow==16.1.0
+duckdb==1.0.0
+
+# DB
+SQLAlchemy==2.0.32
+psycopg[binary]==3.2.1
+alembic==1.13.2
+
+# Parsing
+lxml==5.3.0
+beautifulsoup4==4.12.3
+requests==2.32.3
+
+# Scheduling (optional)
+prefect==3.0.6
+
+# Logging/Retry
+loguru==0.7.2
+tenacity==8.5.0

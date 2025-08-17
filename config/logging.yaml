@@ -1,0 +1,17 @@
+version: 1
+formatters:
+  std:
+    format: "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+handlers:
+  file:
+    class: logging.FileHandler
+    filename: logs/app.log
+    formatter: std
+    level: INFO
+  console:
+    class: logging.StreamHandler
+    formatter: std
+    level: INFO
+root:
+  level: INFO
+  handlers: [console, file]
