@@ -1,4 +1,4 @@
-# Project Skeleton + Environment Setup (Full Docker)
+# Project Skeleton + Environment Setup
 
 This repository uses Docker to run Postgres, pgAdmin, an SFTP server, and the Python app
 in isolated containers. Follow the Windows quick start below.
@@ -30,7 +30,6 @@ in isolated containers. Follow the Windows quick start below.
    ```bash
    docker compose build app
    docker compose up -d
-   docker compose exec app python -m src.jobs.manage healthcheck
    ```
    Expected: SUCCESS: Stack is up and DB connection OK.
 
